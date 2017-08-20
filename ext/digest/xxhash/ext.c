@@ -340,7 +340,7 @@ static VALUE _Digest_XXHash_inspect(VALUE self)
 static VALUE _instantiate_and_digest(int argc, VALUE* argv, VALUE klass, ID digest_method_id)
 {
 	VALUE str, seed;
-	int argc2 = rb_scan_args(argc, argv, "12", &str, &seed);
+	int argc2 = rb_scan_args(argc, argv, "11", &str, &seed);
 
 	if (TYPE(str) != T_STRING)
 		rb_raise(rb_eTypeError, "Argument type not string.");
