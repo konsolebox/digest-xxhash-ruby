@@ -17,40 +17,42 @@ def get_repeated_0x00_to_0xff(length)
   [str].cycle(cycles).to_a.join[0...length]
 end
 
-describe Digest::XXH32 do
-  it "produces correct types of digest outputs" do
-    Digest::XXH32.digest("").must_be_instance_of String
-    Digest::XXH32.hexdigest("").must_be_instance_of String
-    Digest::XXH32.idigest("").must_be_instance_of Integer
-    Digest::XXH32.new.digest("").must_be_instance_of String
-    Digest::XXH32.new.hexdigest("").must_be_instance_of String
-    Digest::XXH32.new.idigest("").must_be_instance_of Integer
-  end
+[Digest::XXH32, Digest::XXH64].each do |klass|
+  describe klass do
+    it "produces correct types of digest outputs" do
+      klass.digest("").must_be_instance_of String
+      klass.hexdigest("").must_be_instance_of String
+      klass.idigest("").must_be_instance_of Integer
+      klass.new.digest("").must_be_instance_of String
+      klass.new.hexdigest("").must_be_instance_of String
+      klass.new.idigest("").must_be_instance_of Integer
+    end
 
-  it "produces similar output with its digest, hexdigest and idigest methods" do
-    digest = Digest::XXH32.digest("abcd")
-    Digest::XXH32.new.digest("abcd").must_equal digest
-    Digest::XXH32.new.update("ab").update("cd").digest.must_equal digest
-    Digest::XXH32.new.update("ab").update("cd").digest!.must_equal digest
-    Digest::XXH32.new.reset.update("ab").update("cd").digest!.must_equal digest
+    it "produces similar output with its digest, hexdigest and idigest methods" do
+      digest = klass.digest("abcd")
+      klass.new.digest("abcd").must_equal digest
+      klass.new.update("ab").update("cd").digest.must_equal digest
+      klass.new.update("ab").update("cd").digest!.must_equal digest
+      klass.new.reset.update("ab").update("cd").digest!.must_equal digest
 
-    hexdigest = Digest::XXH32.hexdigest("abcd")
-    Digest::XXH32.new.hexdigest("abcd").must_equal hexdigest
-    Digest::XXH32.new.update("ab").update("cd").hexdigest.must_equal hexdigest
-    Digest::XXH32.new.update("ab").update("cd").hexdigest!.must_equal hexdigest
-    Digest::XXH32.new.reset.update("ab").update("cd").hexdigest!.must_equal hexdigest
+      hexdigest = klass.hexdigest("abcd")
+      klass.new.hexdigest("abcd").must_equal hexdigest
+      klass.new.update("ab").update("cd").hexdigest.must_equal hexdigest
+      klass.new.update("ab").update("cd").hexdigest!.must_equal hexdigest
+      klass.new.reset.update("ab").update("cd").hexdigest!.must_equal hexdigest
 
-    idigest = Digest::XXH32.idigest("abcd")
-    Digest::XXH32.new.idigest("abcd").must_equal idigest
-    Digest::XXH32.new.update("ab").update("cd").idigest.must_equal idigest
-    Digest::XXH32.new.update("ab").update("cd").idigest!.must_equal idigest
-    Digest::XXH32.new.reset.update("ab").update("cd").idigest!.must_equal idigest
+      idigest = klass.idigest("abcd")
+      klass.new.idigest("abcd").must_equal idigest
+      klass.new.update("ab").update("cd").idigest.must_equal idigest
+      klass.new.update("ab").update("cd").idigest!.must_equal idigest
+      klass.new.reset.update("ab").update("cd").idigest!.must_equal idigest
 
-    digest_enc = digest.unpack('H*').pop
-    hexdigest.must_equal digest_enc
+      digest_enc = digest.unpack('H*').pop
+      hexdigest.must_equal digest_enc
 
-    idigest_enc = "%08x" % idigest
-    hexdigest.must_equal idigest_enc
+      idigest_enc = "%08x" % idigest
+      hexdigest.must_equal idigest_enc
+    end
   end
 end
 
