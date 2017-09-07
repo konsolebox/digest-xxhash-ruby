@@ -21,10 +21,10 @@ describe Digest::XXH32 do
   it "produces correct types of digest outputs" do
     Digest::XXH32.digest("").must_be_instance_of String
     Digest::XXH32.hexdigest("").must_be_instance_of String
-    Digest::XXH32.idigest("").must_be_instance_of Fixnum
+    Digest::XXH32.idigest("").must_be_instance_of Integer
     Digest::XXH32.new.digest("").must_be_instance_of String
     Digest::XXH32.new.hexdigest("").must_be_instance_of String
-    Digest::XXH32.new.idigest("").must_be_instance_of Fixnum
+    Digest::XXH32.new.idigest("").must_be_instance_of Integer
   end
 
   it "produces similar output with its digest, hexdigest and idigest methods" do
