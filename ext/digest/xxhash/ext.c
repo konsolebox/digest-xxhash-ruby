@@ -23,7 +23,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 #include <ruby.h>
 #include <ruby/digest.h>
 #include <stdint.h>
