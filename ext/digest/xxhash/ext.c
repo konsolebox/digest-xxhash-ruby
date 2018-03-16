@@ -409,7 +409,7 @@ static VALUE _Digest_XXH32_internal_allocate(VALUE klass)
 static VALUE _Digest_XXH32_update(VALUE self, VALUE str)
 {
 	if (XXH32_update(_get_state_32(self), RSTRING_PTR(str), RSTRING_LEN(str)) != XXH_OK)
-		rb_raise(rb_eRuntimeError, "Failed to reset state.");
+		rb_raise(rb_eRuntimeError, "Failed to update state.");
 
 	return self;
 }
@@ -557,7 +557,7 @@ static VALUE _Digest_XXH64_internal_allocate(VALUE klass)
 static VALUE _Digest_XXH64_update(VALUE self, VALUE str)
 {
 	if (XXH64_update(_get_state_64(self), RSTRING_PTR(str), RSTRING_LEN(str)) != XXH_OK)
-		rb_raise(rb_eRuntimeError, "Failed to reset state.");
+		rb_raise(rb_eRuntimeError, "Failed to update state.");
 
 	return self;
 }
