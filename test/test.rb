@@ -22,10 +22,10 @@ end
     it "produces correct types of digest outputs" do
       klass.digest("").must_be_instance_of String
       klass.hexdigest("").must_be_instance_of String
-      klass.idigest("").must_be_instance_of Integer
+      klass.idigest("").must_be_kind_of Integer
       klass.new.digest("").must_be_instance_of String
       klass.new.hexdigest("").must_be_instance_of String
-      klass.new.idigest("").must_be_instance_of Integer
+      klass.new.idigest("").must_be_kind_of Integer
     end
 
     it "produces similar output with its digest, hexdigest and idigest methods" do
