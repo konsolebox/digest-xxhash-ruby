@@ -62,6 +62,7 @@ static ID _id_reset;
 static ID _id_update;
 
 static VALUE _Digest;
+static VALUE _Digest_Class;
 static VALUE _Digest_XXHash;
 static VALUE _Digest_XXH32;
 static VALUE _Digest_XXH64;
@@ -699,18 +700,21 @@ void Init_xxhash()
 	DEFINE_ID(reset)
 	DEFINE_ID(update)
 
-	#if 0
-	_Digest = rb_define_module("Digest"); /* Tell RDoc about Digest since it doesn't recognize rb_path2class. */
-	#endif
-
 	rb_require("digest");
 	_Digest = rb_path2class("Digest");
+	_Digest_Class = rb_path2class("Digest::Class");
+
+	#if 0
+	/* Tell RDoc about Digest and Digest::Class since it doesn't parse rb_path2class. */
+	_Digest = rb_define_module("Digest");
+	_Digest_Class = rb_define_class_under(_Digest, "Class", rb_cObject);
+	#endif
 
 	/*
 	 * Document-class: Digest::XXHash
 	 */
 
-	_Digest_XXHash = rb_define_class_under(_Digest, "XXHash", rb_path2class("Digest::Class"));
+	_Digest_XXHash = rb_define_class_under(_Digest, "XXHash", _Digest_Class);
 
 	rb_define_method(_Digest_XXHash, "digest", _Digest_XXHash_digest, -1);
 	rb_define_method(_Digest_XXHash, "hexdigest", _Digest_XXHash_hexdigest, -1);
