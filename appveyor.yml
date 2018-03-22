@@ -1,0 +1,19 @@
+version: 1.0.{build}
+init:
+- cmd: >-
+    set base_path=C:/Program Files/7-Zip;C:/Program Files/AppVeyor/BuildAgent;C:/Program Files/Git/cmd;C:/Windows/system32;C:/Windows;"C:/Program Files (x86)/GNU/GnuPG/pub"
+
+    set PATH=C:/ruby%ruby_version%/bin;C:/msys64/usr/bin;%base_path%
+environment:
+  matrix:
+  - ruby_version: 22-x64
+  - ruby_version: 23-x64
+  - ruby_version: 24-x64
+  - ruby_version: 25-x64
+install:
+- cmd: bundle install
+build_script:
+- cmd: bundle exec rake -rdevkit compile
+test_script:
+- cmd: bundle exec rake test
+deploy: off

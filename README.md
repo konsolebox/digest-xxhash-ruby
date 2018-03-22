@@ -61,3 +61,4 @@ Or install it yourself as:
 5. Create a new Pull Request.
 
 [![Build Status](https://travis-ci.org/konsolebox/digest-xxhash-ruby.svg?branch=master)](https://travis-ci.org/konsolebox/digest-xxhash-ruby)
+[![Build status](https://ci.appveyor.com/api/projects/status/kb6hvlxjms3ftw7u?svg=true)](https://ci.appveyor.com/project/konsolebox/digest-xxhash-ruby)
