@@ -17,4 +17,7 @@ task :clean do
   rm_f list unless list.empty?
 end
 
+# Set 'test' as default task.
+task :default => :test
+
 # Run `rake --tasks` for a list of tasks.
