@@ -1,4 +1,4 @@
-# digest-xxhash-ruby
+# digest-xxhash
 
 This gem 'digest-xxhash' provides XXH32 and XXH64 functions for Ruby.  It
 inherits Digest::Class and complies with Digest::Instance's functional design.
