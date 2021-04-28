@@ -20,38 +20,38 @@ end
 [Digest::XXH32, Digest::XXH64].each do |klass|
   describe klass do
     it "produces correct types of digest outputs" do
-      klass.digest("").must_be_instance_of String
-      klass.hexdigest("").must_be_instance_of String
-      klass.idigest("").must_be_kind_of Integer
-      klass.new.digest("").must_be_instance_of String
-      klass.new.hexdigest("").must_be_instance_of String
-      klass.new.idigest("").must_be_kind_of Integer
+      _(klass.digest("")).must_be_instance_of String
+      _(klass.hexdigest("")).must_be_instance_of String
+      _(klass.idigest("")).must_be_kind_of Integer
+      _(klass.new.digest("")).must_be_instance_of String
+      _(klass.new.hexdigest("")).must_be_instance_of String
+      _(klass.new.idigest("")).must_be_kind_of Integer
     end
 
     it "produces similar output with its digest, hexdigest and idigest methods" do
       digest = klass.digest("abcd")
-      klass.new.digest("abcd").must_equal digest
-      klass.new.update("ab").update("cd").digest.must_equal digest
-      klass.new.update("ab").update("cd").digest!.must_equal digest
-      klass.new.reset.update("ab").update("cd").digest!.must_equal digest
+      _(klass.new.digest("abcd")).must_equal digest
+      _(klass.new.update("ab").update("cd").digest).must_equal digest
+      _(klass.new.update("ab").update("cd").digest!).must_equal digest
+      _(klass.new.reset.update("ab").update("cd").digest!).must_equal digest
 
       hexdigest = klass.hexdigest("abcd")
-      klass.new.hexdigest("abcd").must_equal hexdigest
-      klass.new.update("ab").update("cd").hexdigest.must_equal hexdigest
-      klass.new.update("ab").update("cd").hexdigest!.must_equal hexdigest
-      klass.new.reset.update("ab").update("cd").hexdigest!.must_equal hexdigest
+      _(klass.new.hexdigest("abcd")).must_equal hexdigest
+      _(klass.new.update("ab").update("cd").hexdigest).must_equal hexdigest
+      _(klass.new.update("ab").update("cd").hexdigest!).must_equal hexdigest
+      _(klass.new.reset.update("ab").update("cd").hexdigest!).must_equal hexdigest
 
       idigest = klass.idigest("abcd")
-      klass.new.idigest("abcd").must_equal idigest
-      klass.new.update("ab").update("cd").idigest.must_equal idigest
-      klass.new.update("ab").update("cd").idigest!.must_equal idigest
-      klass.new.reset.update("ab").update("cd").idigest!.must_equal idigest
+      _(klass.new.idigest("abcd")).must_equal idigest
+      _(klass.new.update("ab").update("cd").idigest).must_equal idigest
+      _(klass.new.update("ab").update("cd").idigest!).must_equal idigest
+      _(klass.new.reset.update("ab").update("cd").idigest!).must_equal idigest
 
       digest_enc = digest.unpack('H*').pop
-      hexdigest.must_equal digest_enc
+      _(hexdigest).must_equal digest_enc
 
       idigest_enc = "%08x" % idigest
-      hexdigest.must_equal idigest_enc
+      _(hexdigest).must_equal idigest_enc
     end
   end
 end
@@ -80,7 +80,7 @@ CSV.foreach(File.join(TEST_DIR, 'test.vectors'), col_sep: '|').with_index(1) do 
   describe klass do
     describe "using #{msg_method}(#{msg_length}) as message generator, and #{seed} as seed" do
       it "should produce #{sum}"  do
-        klass.hexdigest(msg, seed).must_equal sum
+        _(klass.hexdigest(msg, seed)).must_equal sum
       end
     end
   end
