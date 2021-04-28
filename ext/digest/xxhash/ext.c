@@ -313,7 +313,7 @@ static VALUE _Digest_XXHash_idigest_bang(VALUE self)
  * This method is called when instances are cloned.  It is responsible for
  * replicating internal data.
  */
-static VALUE _Digest_XXHash_initialize_copy(VALUE orig)
+static VALUE _Digest_XXHash_initialize_copy(VALUE self, VALUE orig)
 {
 	rb_raise(rb_eNotImpError, "initialize_copy method not implemented.");
 }
