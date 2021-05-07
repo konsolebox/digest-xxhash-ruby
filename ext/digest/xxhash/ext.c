@@ -67,6 +67,8 @@ static VALUE _Digest_XXHash;
 static VALUE _Digest_XXH32;
 static VALUE _Digest_XXH64;
 
+#define _RSTRING_PTR_UCHAR(x) ((const unsigned char *)RSTRING_PTR(x))
+
 /*
  * Data types
  */
@@ -123,10 +125,10 @@ static VALUE _encode_big_endian_32(uint32_t num)
 		temp = num;
 	}
 
-	return rb_usascii_str_new((unsigned char *) &temp, sizeof(uint32_t));
+	return rb_usascii_str_new((char *) &temp, sizeof(uint32_t));
 }
 
-static uint32_t _decode_big_endian_32_cstr(unsigned char *str)
+static uint32_t _decode_big_endian_32_cstr(const char *str)
 {
 	uint32_t temp = read32(str);
 
@@ -152,10 +154,10 @@ static VALUE _encode_big_endian_64(uint64_t num)
 		temp = num;
 	}
 
-	return rb_usascii_str_new((unsigned char *) &temp, sizeof(uint64_t));
+	return rb_usascii_str_new((char *) &temp, sizeof(uint64_t));
 }
 
-static uint64_t _decode_big_endian_64_cstr(unsigned char *str)
+static uint64_t _decode_big_endian_64_cstr(const char *str)
 {
 	uint64_t temp = read64(str);
 
@@ -175,7 +177,7 @@ static VALUE _hex_encode_str(VALUE str)
 {
 	int len = RSTRING_LEN(str);
 	VALUE hex = rb_str_new(0, len * 2);
-	hex_encode_str_implied(RSTRING_PTR(str), len, RSTRING_PTR(hex));
+	hex_encode_str_implied(_RSTRING_PTR_UCHAR(str), len, (unsigned char *)RSTRING_PTR(hex));
 	return hex;
 }
 
@@ -221,7 +223,7 @@ static VALUE _Digest_XXHash_ifinish(VALUE self)
 
 static VALUE _do_digest(int argc, VALUE* argv, VALUE self, ID finish_method_id)
 {
-	VALUE str, seed;
+	VALUE str, seed, result;
 	int argc2 = argc > 0 ? rb_scan_args(argc, argv, "02", &str, &seed) : 0;
 
 	if (argc2 > 0) {
@@ -236,7 +238,7 @@ static VALUE _do_digest(int argc, VALUE* argv, VALUE self, ID finish_method_id)
 		rb_funcall(self, _id_update, 1, str);
 	}
 
-	VALUE result = rb_funcall(self, finish_method_id, 0);
+	result = rb_funcall(self, finish_method_id, 0);
 
 	if (argc2 > 0)
 		rb_funcall(self, _id_reset, 0);
@@ -278,7 +280,8 @@ static VALUE _Digest_XXHash_digest(int argc, VALUE* argv, VALUE self)
  */
 static VALUE _Digest_XXHash_hexdigest(int argc, VALUE* argv, VALUE self)
 {
-	VALUE result = _do_digest(argc, argv, self, _id_finish);
+	VALUE result;
+	result = _do_digest(argc, argv, self, _id_finish);
 	return _hex_encode_str(result);
 }
 
@@ -302,7 +305,8 @@ static VALUE _Digest_XXHash_idigest(int argc, VALUE* argv, VALUE self)
  */
 static VALUE _Digest_XXHash_idigest_bang(VALUE self)
 {
-	VALUE result = rb_funcall(self, _id_ifinish, 0);
+	VALUE result;
+	result = rb_funcall(self, _id_ifinish, 0);
 	rb_funcall(self, _id_reset, 0);
 	return result;
 }
@@ -325,27 +329,31 @@ static VALUE _Digest_XXHash_initialize_copy(VALUE self, VALUE orig)
  */
 static VALUE _Digest_XXHash_inspect(VALUE self)
 {
-	VALUE klass = rb_obj_class(self);
-	VALUE klass_name = rb_class_name(klass);
+	VALUE klass, klass_name, hexdigest, args[2];
+	klass = rb_obj_class(self);
+	klass_name = rb_class_name(klass);
 
 	if (klass_name == Qnil)
 		klass_name = rb_inspect(klass);
 
-	VALUE hexdigest = rb_funcall(self, _id_hexdigest, 0);
+	hexdigest = rb_funcall(self, _id_hexdigest, 0);
 
-	VALUE args[] = { klass_name, hexdigest };
+	args[0] = klass_name;
+	args[1] = hexdigest;
 	return rb_str_format(sizeof(args), args, rb_str_new_literal("#<%s|%s>"));
 }
 
 static VALUE _instantiate_and_digest(int argc, VALUE* argv, VALUE klass, ID digest_method_id)
 {
-	VALUE str, seed;
-	int argc2 = rb_scan_args(argc, argv, "11", &str, &seed);
+	VALUE str, seed, instance;
+	int argc2;
+
+	argc2 = rb_scan_args(argc, argv, "11", &str, &seed);
 
 	if (TYPE(str) != T_STRING)
 		rb_raise(rb_eTypeError, "Argument type not string.");
 
-	VALUE instance = rb_funcall(klass, _id_new, 0);
+	instance = rb_funcall(klass, _id_new, 0);
 
 	if (argc2 > 1)
 		return rb_funcall(instance, digest_method_id, 2, str, seed);
@@ -453,12 +461,12 @@ static VALUE _Digest_XXH32_reset(int argc, VALUE* argv, VALUE self)
 				if (len == (sizeof(uint32_t) * 2)) {
 					unsigned char hex_decoded_seed[sizeof(uint32_t)];
 
-					if (! hex_decode_str_implied(RSTRING_PTR(seed), sizeof(uint32_t) * 2, hex_decoded_seed))
+					if (! hex_decode_str_implied(_RSTRING_PTR_UCHAR(seed), sizeof(uint32_t) * 2, hex_decoded_seed))
 						rb_raise(rb_eArgError, "Invalid hex string seed: %s\n", StringValueCStr(seed));
 
-					decoded_seed = _decode_big_endian_32_cstr(hex_decoded_seed);
+					decoded_seed = _decode_big_endian_32_cstr((const char *)hex_decoded_seed);
 				} else if (len == sizeof(uint32_t)) {
-					decoded_seed = _decode_big_endian_32_cstr(RSTRING_PTR(seed));
+					decoded_seed = _decode_big_endian_32(seed);
 				} else {
 					rb_raise(rb_eArgError, "Invalid seed length.  Expecting an 8-character hex string or a 4-byte string.");
 				}
@@ -601,12 +609,12 @@ static VALUE _Digest_XXH64_reset(int argc, VALUE* argv, VALUE self)
 				if (len == (sizeof(uint64_t) * 2)) {
 					unsigned char hex_decoded_seed[sizeof(uint64_t)];
 
-					if (! hex_decode_str_implied(RSTRING_PTR(seed), sizeof(uint64_t) * 2, hex_decoded_seed))
+					if (! hex_decode_str_implied(_RSTRING_PTR_UCHAR(seed), sizeof(uint64_t) * 2, hex_decoded_seed))
 						rb_raise(rb_eArgError, "Invalid hex string seed: %s\n", StringValueCStr(seed));
 
-					decoded_seed = _decode_big_endian_64_cstr(hex_decoded_seed);
+					decoded_seed = _decode_big_endian_64_cstr((const char *)hex_decoded_seed);
 				} else if (len == sizeof(uint64_t)) {
-					decoded_seed = _decode_big_endian_64_cstr(RSTRING_PTR(seed));
+					decoded_seed = _decode_big_endian_64(seed);
 				} else {
 					rb_raise(rb_eArgError, "Invalid seed length.  Expecting a 16-character hex string or an 8-byte string.");
 				}

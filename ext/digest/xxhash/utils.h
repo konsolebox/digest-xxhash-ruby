@@ -69,9 +69,10 @@ static uint64_t read64(const void *ptr)
 static void hex_encode_str_implied(const unsigned char *src, size_t len, unsigned char *dest)
 {
 	static const unsigned char table[] = "0123456789abcdef";
+	unsigned char c;
 
 	for (; len > 0; --len) {
-		unsigned char c = *src++;
+		c = *src++;
 		*dest++ = table[c >> 4];
 		*dest++ = table[c & 0x0f];
 	}
@@ -86,8 +87,10 @@ static void hex_encode_str_implied(const unsigned char *src, size_t len, unsigne
  */
 static int hex_decode_str_implied(const unsigned char *src, size_t len, unsigned char *dest)
 {
+	unsigned char low, high;
+
 	if (len % 2) {
-		unsigned char low = *src++;
+		low = *src++;
 
 		if (low >= '0' && low <= '9') {
 			low -= '0';
@@ -104,7 +107,7 @@ static int hex_decode_str_implied(const unsigned char *src, size_t len, unsigned
 	}
 
 	for (; len > 0; len -= 2) {
-		unsigned char high = *src++;
+		high = *src++;
 
 		if (high >= '0' && high <= '9') {
 			high -= '0';
@@ -116,7 +119,7 @@ static int hex_decode_str_implied(const unsigned char *src, size_t len, unsigned
 			return 0;
 		}
 
-		unsigned char low = *src++;
+		low = *src++;
 
 		if (low >= '0' && low <= '9') {
 			low -= '0';
@@ -134,6 +137,7 @@ static int hex_decode_str_implied(const unsigned char *src, size_t len, unsigned
 	return -1;
 }
 
+#if 0
 /*
  * Calculates length of string that would store decoded hex.
  */
@@ -147,5 +151,6 @@ static size_t calc_hex_decoded_str_length(size_t hex_encoded_length)
 
 	return hex_encoded_length / 2;
 }
+#endif
 
 #endif
