@@ -17,7 +17,7 @@ def get_repeated_0x00_to_0xff(length)
   [str].cycle(cycles).to_a.join[0...length]
 end
 
-[Digest::XXH32, Digest::XXH64].each do |klass|
+[Digest::XXH32, Digest::XXH64, Digest::XXH3_64bits, Digest::XXH3_128bits].each do |klass|
   describe klass do
     it "produces correct types of digest outputs" do
       _(klass.digest("")).must_be_instance_of String
@@ -47,17 +47,17 @@ end
       _(klass.new.update("ab").update("cd").idigest!).must_equal idigest
       _(klass.new.reset.update("ab").update("cd").idigest!).must_equal idigest
 
-      digest_enc = digest.unpack('H*').pop
-      _(hexdigest).must_equal digest_enc
+      digest_hex = digest.unpack('H*').pop
+      _(hexdigest).must_equal digest_hex
 
-      idigest_enc = "%08x" % idigest
-      _(hexdigest).must_equal idigest_enc
+      idigest_hex = "%08x" % idigest
+      _(hexdigest).must_equal idigest_hex
     end
   end
 end
 
 CSV.foreach(File.join(TEST_DIR, 'test.vectors'), col_sep: '|').with_index(1) do |csv, line_num|
-  bit_size, msg_method, msg_length, seed, sum = csv
+  algo, msg_method, msg_length, seed_type, seed_or_secret, sum = csv
 
   case msg_method
   when 'null'
@@ -65,23 +65,48 @@ CSV.foreach(File.join(TEST_DIR, 'test.vectors'), col_sep: '|').with_index(1) do 
   when '0x00_to_0xff'
     msg = get_repeated_0x00_to_0xff(msg_length.to_i)
   else
-    raise "Invalid specified message generation method in 'test.vectors', line #{line_num}."
+    raise "Invalid message generation method specified in test.vectors:#{line_num}: #{msg_method}"
   end
 
-  case bit_size.to_i
-  when 32
+  case algo
+  when '32'
     klass = Digest::XXH32
-  when 64
+  when '64'
     klass = Digest::XXH64
+  when 'xxh3-64'
+    klass = Digest::XXH3_64bits
+  when 'xxh3-128'
+    klass = Digest::XXH3_128bits
   else
-    raise "Invalid specified bit size in 'test.vectors', line #{line_num}."
+    raise "Invalid algorithm specified in test.vectors:#{line_num}: #{algo}"
   end
 
-  describe klass do
-    describe "using #{msg_method}(#{msg_length}) as message generator, and #{seed} as seed" do
-      it "should produce #{sum}"  do
-        _(klass.hexdigest(msg, seed)).must_equal sum
+  case seed_type
+  when 'seed'
+    describe klass do
+      describe "using #{msg_method}(#{msg_length}) as message generator, and #{seed_or_secret} as seed" do
+        it "should produce #{sum}"  do
+          _(klass.hexdigest(msg, seed_or_secret)).must_equal sum
+        end
       end
     end
+  when 'secret'
+    describe klass do
+      describe "using #{msg_method}(#{msg_length}) as message generator, and #{seed_or_secret} as secret" do
+        it "should produce #{sum}"  do
+          secret_str = [seed_or_secret].pack('H*')
+          _(klass.new.reset_with_secret(secret_str).update(msg).hexdigest).must_equal sum
+        end
+      end
+    end
+  else
+    raise "Invalid seed type specified in test.vectors:#{line_num}: #{seed_type}"
+  end
+end
+
+describe Digest::XXHash::XXH3_SECRET_SIZE_MIN do
+  it "should be 136" do
+    # Documentation should be updated to reflect the new value if this fails.
+    _(Digest::XXHash::XXH3_SECRET_SIZE_MIN).must_equal 136
   end
 end

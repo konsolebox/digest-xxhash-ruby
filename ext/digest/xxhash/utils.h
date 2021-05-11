@@ -10,6 +10,7 @@
 
 #include <string.h>
 
+#if 0
 /*
  * Checks if system uses little endian.
  *
@@ -21,7 +22,9 @@ static int is_little_endian()
 	const unsigned num = 0xABCD;
 	return *((unsigned char *) &num) == 0xCD;
 }
+#endif
 
+#if 0
 /*
  * Swaps bytes to transform numbers from little endian mode to big endian mode
  * or vice versa.
@@ -40,7 +43,9 @@ static uint64_t swap_uint64(uint64_t val)
     val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
     return (val << 32) | (val >> 32);
 }
+#endif
 
+#if 0
 /*
  * Reads primitive numerical data from an address which can be aligned or not.
  *
@@ -59,6 +64,7 @@ static uint64_t read64(const void *ptr)
 	memcpy(&value, ptr, sizeof(uint64_t));
 	return value;
 }
+#endif
 
 /*
  * A simplified hex encoder based on Yannuth's answer in StackOverflow

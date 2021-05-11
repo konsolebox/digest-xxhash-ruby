@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 
-# This script does not produce test vectors for XXH3_64bits and XXH3_128bits but
-# its output for XXH32 and XXH64 can be compared to xxhsum's.
-
-require 'ruby-xxhash'
+require 'open3'
 
 rijndael_sbox = [
   0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
@@ -27,6 +24,8 @@ rijndael_sbox = [
 _32bit_seeds = rijndael_sbox.each_slice(4).map{ |e| e.map{ |f| "%02x" % f }.join }.to_a
 _32bit_seeds_cycles = _32bit_seeds.cycle.each_slice(32)
 _64bit_seeds = rijndael_sbox.each_slice(8).map{ |e| e.map{ |f| "%02x" % f }.join }.to_a
+_secrets = rijndael_sbox.take(144).each_slice(3).map{ |e| e.permutation.to_a }
+    .then{ |e| e.shift.zip(*e) }.map{ |e| e.flatten.map{ |f| "%02x" %f }.join }
 
 def get_repeated_0x00_to_0xff(length)
   hex = (0..0xff).to_a.map{ |e| sprintf "%2x", e }.join
@@ -35,22 +34,26 @@ def get_repeated_0x00_to_0xff(length)
   [str].cycle(cycles).to_a.join[0...length]
 end
 
-[
-  [32, 'null', 0],
-  [32, '0x00_to_0xff', 17 ** 0],
-  [32, '0x00_to_0xff', 17 ** 1],
-  [32, '0x00_to_0xff', 17 ** 2],
-  [32, '0x00_to_0xff', 17 ** 3],
-  [32, '0x00_to_0xff', 17 ** 4],
-  [32, '0x00_to_0xff', 17 ** 5],
-  [64, 'null', 0],
-  [64, '0x00_to_0xff', 17 ** 0],
-  [64, '0x00_to_0xff', 17 ** 1],
-  [64, '0x00_to_0xff', 17 ** 2],
-  [64, '0x00_to_0xff', 17 ** 3],
-  [64, '0x00_to_0xff', 17 ** 4],
-  [64, '0x00_to_0xff', 17 ** 5]
-].each do |bit_size, msg_method, msg_length|
+def produce_vectors(algo, algo_index, seed_type, seed_or_secret, msg, msg_method_used)
+  seed_opt = seed_type == :secret ? 'S' : 's'
+  cmd = ["./xxhsum", "-H#{algo_index}", "-#{seed_opt}#{seed_or_secret}"]
+  output, status = Open3.capture2(*cmd, binmode: true, stdin_data: msg)
+  exit 1 unless status.success?
+  sum = output.sub(/\s.*/, '')
+  puts "#{algo}|#{msg_method_used}|#{msg.length}|#{seed_type.to_s}|#{seed_or_secret}|#{sum}"
+end
+
+['32', '64', 'xxh3-64', 'xxh3-128'].map do |algo|
+  [
+    [algo, 'null', 0],
+    [algo, '0x00_to_0xff', 17 ** 0],
+    [algo, '0x00_to_0xff', 17 ** 1],
+    [algo, '0x00_to_0xff', 17 ** 2],
+    [algo, '0x00_to_0xff', 17 ** 3],
+    [algo, '0x00_to_0xff', 17 ** 4],
+    [algo, '0x00_to_0xff', 17 ** 5]
+  ]
+end.flatten(1).each do |algo, msg_method, msg_length|
   case msg_method
   when 'null'
     msg = ''
@@ -60,15 +63,50 @@ end
     raise "Invalid message generation method."
   end
 
-  if bit_size == 32
+  case algo
+  when '32'
     ["00000000"].concat(_32bit_seeds_cycles.next).each do |seed|
-      sum = XXhash.xxh32(msg, seed.to_i(16))
-      puts "#{bit_size}|#{msg_method}|#{msg_length}|seed|#{seed}|#{"%08x" % sum}"
+      produce_vectors(algo, 0, :seed, seed, msg, msg_method)
     end
-  else
+  when '64'
     ["0000000000000000"].concat(_64bit_seeds).each do |seed|
-      sum = XXhash.xxh64(msg, seed.to_i(16))
-      puts "#{bit_size}|#{msg_method}|#{msg_length}|seed|#{seed}|#{"%016x" % sum}"
+      produce_vectors(algo, 1, :seed, seed, msg, msg_method)
+    end
+  when 'xxh3-64'
+    ["0000000000000000"].concat(_64bit_seeds).each do |seed|
+      produce_vectors(algo, 3, :seed, seed, msg, msg_method)
+    end
+  when 'xxh3-128'
+    ["0000000000000000"].concat(_64bit_seeds).each do |seed|
+      produce_vectors(algo, 2, :seed, seed, msg, msg_method)
+    end
+  end
+end
+
+['xxh3-64', 'xxh3-128'].map do |algo|
+  [
+    [algo, 'null', 0],
+    [algo, '0x00_to_0xff', 17 ** 0],
+    [algo, '0x00_to_0xff', 17 ** 5]
+  ]
+end.flatten(1).each do |algo, msg_method, msg_length|
+  case msg_method
+  when 'null'
+    msg = ''
+  when '0x00_to_0xff'
+    msg = get_repeated_0x00_to_0xff(msg_length)
+  else
+    raise "Invalid message generation method."
+  end
+
+  case algo
+  when 'xxh3-64'
+    _secrets.each do |secret|
+      produce_vectors(algo, 3, :secret, secret, msg, msg_method)
+    end
+  when 'xxh3-128'
+    _secrets.each do |secret|
+      produce_vectors(algo, 2, :secret, secret, msg, msg_method)
     end
   end
 end

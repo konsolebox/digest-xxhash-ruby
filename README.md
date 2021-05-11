@@ -1,10 +1,11 @@
 # digest-xxhash
 
-This gem 'digest-xxhash' provides XXH32 and XXH64 functions for Ruby.  It
-inherits Digest::Class and complies with Digest::Instance's functional design.
+This gem provides XXH32, XXH64, XXH3_64bits and XXH3_128bits
+functionalities for Ruby.  It inherits Digest::Class and complies
+with Digest::Instance's functional design.
 
-Its core implementation was taken from the official source, which is
-in https://github.com/Cyan4973/xxHash.
+Its core implementation comes from the official source, which is in
+https://github.com/Cyan4973/xxHash.
 
 ## Installation
 
@@ -61,6 +62,18 @@ The library can also be installed in Gentoo system-wide using 'layman':
 
     Digest::XXH64.new.reset("0123456789abcdef").update("12").update("34").hexdigest
     => "d7544504de216507"
+
+    Digest::XXH3_64bits.hexdigest("1234", "0123456789abcdef")
+    => "4156724c7605b1be"
+
+    Digest::XXH3_64bits.new.reset_with_secret("abcd" * 34).update("1234").hexdigest
+    => "f7bbdbf9ec8c6394"
+
+    Digest::XXH3_128bits.hexdigest("1234", "0123456789abcdef") # XXH3_128bits() only allows 64-bit seeds
+    => "ad6108fb0b9a6b51b7f80d053c76c0fd"
+
+    Digest::XXH3_128bits.new.reset_with_secret("abcd" * 34).update("1234").hexdigest
+    => "0d44dd7fde8ea2b4ba961e1a26f71f21"
 
 ## API Documentation
 
