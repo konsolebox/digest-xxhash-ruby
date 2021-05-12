@@ -1311,13 +1311,13 @@ XXH_PUBLIC_API XXH128_hash_t XXH128(const void* data, size_t len, XXH64_hash_t s
  * @internal
  * @brief Modify this function to use a different routine than malloc().
  */
-static void* XXH_malloc(size_t s) { return malloc(s); }
+static void* XXH_malloc(size_t s) { return ruby_xmalloc(s); }
 
 /*!
  * @internal
  * @brief Modify this function to use a different routine than free().
  */
-static void XXH_free(void* p) { free(p); }
+static void XXH_free(void* p) { ruby_xfree(p); }
 
 #include <string.h>
 
