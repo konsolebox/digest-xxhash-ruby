@@ -1083,6 +1083,10 @@ void Init_xxhash()
 {
 	#define DEFINE_ID(x) _id_##x = rb_intern_const(#x);
 
+	#ifdef HAVE_RB_EXT_RACTOR_SAFE
+		rb_ext_ractor_safe(true);
+	#endif
+
 	DEFINE_ID(digest)
 	DEFINE_ID(finish)
 	DEFINE_ID(hexdigest)

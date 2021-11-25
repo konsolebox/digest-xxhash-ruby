@@ -18,7 +18,7 @@ end
 
 # test
 Rake::TestTask.new(:test => :compile) do |t|
-  t.test_files = FileList['test/test.rb']
+  t.test_files = FileList['test/test.rb', 'test/ractor_test.rb']
   t.verbose = true
 end
 
