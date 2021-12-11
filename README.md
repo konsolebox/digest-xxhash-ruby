@@ -92,6 +92,5 @@ https://rubygems.org/gems/digest-xxhash
 4. Push to the branch (`git push origin my-new-feature`).
 5. Create a new Pull Request.
 
-[![Build Status](https://api.travis-ci.com/konsolebox/digest-xxhash-ruby.svg?branch=master)](https://app.travis-ci.com/github/konsolebox/digest-xxhash-ruby)
-[![Build Status](https://ci.appveyor.com/api/projects/status/kb6hvlxjms3ftw7u?svg=true)](https://ci.appveyor.com/project/konsolebox/digest-xxhash-ruby)
 [![Build Status](https://github.com/konsolebox/digest-xxhash-ruby/actions/workflows/ruby.yml/badge.svg)](https://github.com/konsolebox/digest-xxhash-ruby/actions/workflows/ruby.yml)
+[![Build Status](https://ci.appveyor.com/api/projects/status/kb6hvlxjms3ftw7u?svg=true)](https://ci.appveyor.com/project/konsolebox/digest-xxhash-ruby)
