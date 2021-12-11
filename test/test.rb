@@ -110,3 +110,9 @@ describe Digest::XXHash::XXH3_SECRET_SIZE_MIN do
     _(Digest::XXHash::XXH3_SECRET_SIZE_MIN).must_equal 136
   end
 end
+
+describe Digest::XXHash do
+  it "must have VERSION constant" do
+    _(Digest::XXHash.constants).must_include :VERSION
+  end
+end
