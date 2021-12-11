@@ -19,4 +19,4 @@ cache: vendor/bundle
 build_script:
 - cmd: bundle exec rake -rdevkit compile
 test_script:
-- cmd: bundle exec rake test
+- cmd: bundle exec rake -rdevkit test
