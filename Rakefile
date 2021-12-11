@@ -2,8 +2,11 @@ require 'bundler/gem_tasks'
 require 'rake/extensiontask'
 require 'rake/testtask'
 
-# clean, clobber, compile, and compile:digest/xxhash
-Rake::ExtensionTask.new('digest/xxhash', Bundler::GemHelper.gemspec)
+# clean, clobber, compile, and compile:xxhash
+Rake::ExtensionTask.new('xxhash', Bundler::GemHelper.gemspec) do |task|
+  task.ext_dir = "ext/digest/xxhash"
+  task.lib_dir = "lib/digest"
+end
 
 # install
 Rake::Task[:install].clear
