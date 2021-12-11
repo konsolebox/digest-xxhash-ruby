@@ -1197,4 +1197,6 @@ void Init_xxhash()
 	 */
 
 	rb_define_const(_Digest_XXHash, "XXH3_SECRET_SIZE_MIN", INT2FIX(XXH3_SECRET_SIZE_MIN));
+
+	rb_require("digest/xxhash/version");
 }
