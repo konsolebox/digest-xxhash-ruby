@@ -16,8 +16,17 @@ task :install => :build do
   Process.wait spawn(*gem_command, "install", File.join(pkg_dir, built_gem), *options)
 end
 
+# compile_lazy
+task :compile_lazy do
+  Rake::Task[:compile].invoke
+end.instance_eval do
+  def needed?
+    !File.exist?("lib/digest/xxhash.so")
+  end
+end
+
 # test
-Rake::TestTask.new(:test => :compile) do |t|
+Rake::TestTask.new(:test => :compile_lazy) do |t|
   t.test_files = FileList['test/test.rb']
   t.verbose = true
 end
@@ -29,6 +38,6 @@ task :clean do
 end
 
 # default
-task :default => :test
+task :default => [:compile, :test]
 
 # Run `rake --tasks` for a list of tasks.
