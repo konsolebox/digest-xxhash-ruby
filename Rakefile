@@ -1,8 +1,8 @@
+# build, clean, clobber, release[remote]
 require 'bundler/gem_tasks'
-require 'rake/extensiontask'
-require 'rake/testtask'
 
 # clean, clobber, compile, and compile:digest/xxhash
+require 'rake/extensiontask'
 Rake::ExtensionTask.new('digest/xxhash', Bundler::GemHelper.gemspec)
 
 # compile_lazy
@@ -15,6 +15,7 @@ end.instance_eval do
 end
 
 # test
+require 'rake/testtask'
 Rake::TestTask.new(:test => :compile_lazy) do |t|
   t.test_files = FileList['test/test.rb']
   t.verbose = true
@@ -29,4 +30,4 @@ end
 # default
 task :default => [:compile, :test]
 
-# Run `rake --tasks` for a list of tasks.
+# Run `rake --tasks` or `rake --tasks --all` for a list of tasks.
