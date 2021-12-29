@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
     test/test.vectors
     test/xxhsum.c.c0e86bc0.diff
   ]
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.test_files    = spec.files.grep(%r{^test/})
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "rake"
