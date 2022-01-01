@@ -35,8 +35,7 @@ class AltInstallTask < Rake::TaskLib
 
   def define
     [:install, :"install:local"].each do |name|
-      Rake::Task[name].clear if Rake::Task.task_defined?(name)
-      task(name => :build){ |task| execute_task(task) }
+      task(name).clear.enhance([:build]){ |task| execute_task(task) }
           .singleton_class.prepend(TaskComment)
     end
   end
