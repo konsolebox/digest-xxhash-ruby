@@ -14,12 +14,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        ruby-version: ['2.2', '2.6', '2.7', '3.0']
+        ruby-version: ['2.2', '2.6', '2.7', '3.0', '3.1']
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@473e4d8fe5dd94ee328fdfca9f8c9c7afc9dae5e
+    - uses: ruby/setup-ruby@cd9d3de43b264c20364fa16fc29fb0e0f3ebbd12
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
@@ -29,12 +29,12 @@ jobs:
   test_windows:
     strategy:
       matrix:
-        ruby-version: ['2.6', '2.7']
+        ruby-version: ['2.6', '2.7', '3.0', '3.1']
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@473e4d8fe5dd94ee328fdfca9f8c9c7afc9dae5e
+    - uses: ruby/setup-ruby@cd9d3de43b264c20364fa16fc29fb0e0f3ebbd12
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
