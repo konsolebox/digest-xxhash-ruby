@@ -1079,7 +1079,7 @@ static VALUE _Digest_XXH3_128bits_singleton_block_length(VALUE self)
  * Initialization
  */
 
-void Init_xxhash()
+void Init_xxhash(void)
 {
 	#define DEFINE_ID(x) _id_##x = rb_intern_const(#x);
 
