@@ -642,8 +642,6 @@ static VALUE _Digest_XXH64_reset(int argc, VALUE* argv, VALUE self)
 
 			break;
 		case T_FIXNUM:
-			_xxh64_reset(_get_state_xxh64(self), FIX2UINT(seed));
-			break;
 		case T_BIGNUM:
 			_xxh64_reset(_get_state_xxh64(self), NUM2ULL(seed));
 			break;
@@ -795,8 +793,6 @@ static VALUE _Digest_XXH3_64bits_reset(int argc, VALUE* argv, VALUE self)
 
 			break;
 		case T_FIXNUM:
-			_xxh3_64bits_reset(_get_state_xxh3_64bits(self), FIX2UINT(seed));
-			break;
 		case T_BIGNUM:
 			_xxh3_64bits_reset(_get_state_xxh3_64bits(self), NUM2ULL(seed));
 			break;
@@ -982,8 +978,6 @@ static VALUE _Digest_XXH3_128bits_reset(int argc, VALUE* argv, VALUE self)
 
 			break;
 		case T_FIXNUM:
-			_xxh3_128bits_reset(_get_state_xxh3_128bits(self), FIX2UINT(seed));
-			break;
 		case T_BIGNUM:
 			_xxh3_128bits_reset(_get_state_xxh3_128bits(self), NUM2ULL(seed));
 			break;
