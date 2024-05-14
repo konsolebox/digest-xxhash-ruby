@@ -61,12 +61,12 @@ end
   end
 
   if bit_size == 32
-    ["00000000"].concat(_32bit_seeds_cycles.next).each do |seed|
+    ["00000000", "ffffffff"].concat(_32bit_seeds_cycles.next).each do |seed|
       sum = XXhash.xxh32(msg, seed.to_i(16))
       puts "#{bit_size}|#{msg_method}|#{msg_length}|seed|#{seed}|#{"%08x" % sum}"
     end
   else
-    ["0000000000000000"].concat(_64bit_seeds).each do |seed|
+    ["0000000000000000", "ffffffffffffffff"].concat(_64bit_seeds).each do |seed|
       sum = XXhash.xxh64(msg, seed.to_i(16))
       puts "#{bit_size}|#{msg_method}|#{msg_length}|seed|#{seed}|#{"%016x" % sum}"
     end

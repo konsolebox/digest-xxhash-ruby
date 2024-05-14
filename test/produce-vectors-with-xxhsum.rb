@@ -65,19 +65,19 @@ end.flatten(1).each do |algo, msg_method, msg_length|
 
   case algo
   when '32'
-    ["00000000"].concat(_32bit_seeds_cycles.next).each do |seed|
+    ["00000000", "ffffffff"].concat(_32bit_seeds_cycles.next).each do |seed|
       produce_vectors(algo, 0, :seed, seed, msg, msg_method)
     end
   when '64'
-    ["0000000000000000"].concat(_64bit_seeds).each do |seed|
+    ["0000000000000000", "ffffffffffffffff"].concat(_64bit_seeds).each do |seed|
       produce_vectors(algo, 1, :seed, seed, msg, msg_method)
     end
   when 'xxh3-64'
-    ["0000000000000000"].concat(_64bit_seeds).each do |seed|
+    ["0000000000000000", "ffffffffffffffff"].concat(_64bit_seeds).each do |seed|
       produce_vectors(algo, 3, :seed, seed, msg, msg_method)
     end
   when 'xxh3-128'
-    ["0000000000000000"].concat(_64bit_seeds).each do |seed|
+    ["0000000000000000", "ffffffffffffffff"].concat(_64bit_seeds).each do |seed|
       produce_vectors(algo, 2, :seed, seed, msg, msg_method)
     end
   end

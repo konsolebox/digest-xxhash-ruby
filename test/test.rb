@@ -85,15 +85,21 @@ CSV.foreach(File.join(TEST_DIR, 'test.vectors'), col_sep: '|').with_index(1) do 
   when 'seed'
     describe klass do
       describe "using #{msg_method}(#{msg_length}) as message generator, and #{seed_or_secret} as seed" do
-        it "should produce #{sum}"  do
+        it "should produce #{sum}" do
           _(klass.hexdigest(msg, seed_or_secret)).must_equal sum
+        end
+        it "should produce #{sum} using reset-first strategy" do
+          _(klass.new.reset(seed_or_secret).update(msg).hexdigest).must_equal sum
+        end
+        it "should produce #{sum} using reset-first strategy with an external hex-to-int converter" do
+          _(klass.new.reset(seed_or_secret.to_i(16)).update(msg).hexdigest).must_equal sum
         end
       end
     end
   when 'secret'
     describe klass do
       describe "using #{msg_method}(#{msg_length}) as message generator, and #{seed_or_secret} as secret" do
-        it "should produce #{sum}"  do
+        it "should produce #{sum}" do
           secret_str = [seed_or_secret].pack('H*')
           _(klass.new.reset_with_secret(secret_str).update(msg).hexdigest).must_equal sum
         end
