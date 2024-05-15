@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 konsolebox
+ * Copyright (c) 2024 konsolebox
  *
  * MIT License
  *
