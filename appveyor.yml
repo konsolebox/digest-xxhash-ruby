@@ -2,12 +2,12 @@ version: 1.0.{build}-{branch}
 image: Visual Studio 2019
 environment:
   matrix:
-  - RUBY_VERSION: 26
-  - RUBY_VERSION: 26-x64
-  - RUBY_VERSION: 27
-  - RUBY_VERSION: 27-x64
-  - RUBY_VERSION: 30
-  - RUBY_VERSION: 30-x64
+  - RUBY_VERSION: 31
+  - RUBY_VERSION: 31-1-x64
+  - RUBY_VERSION: 32
+  - RUBY_VERSION: 32-1-x64
+  - RUBY_VERSION: 33
+  - RUBY_VERSION: 33-1-x64
 install:
 - cmd: >-
     set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
@@ -20,3 +20,4 @@ build_script:
 - cmd: bundle exec rake -rdevkit compile
 test_script:
 - cmd: bundle exec rake -rdevkit test
+deploy: off
